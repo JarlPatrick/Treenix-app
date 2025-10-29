@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:treenix_app/home.dart';
 
 /// To run this example, replace this value with your client ID, and/or
 /// update the relevant configuration files, as described in the README.
@@ -47,7 +48,7 @@ class _SignInDemoState extends State<SignInDemo> {
   bool _isAuthorized = false; // has granted permissions?
   String _contactText = '';
   String _errorMessage = '';
-  String _serverAuthCode = '';
+  // String _serverAuthCode = '';
 
   @override
   void initState() {
@@ -188,107 +189,104 @@ class _SignInDemoState extends State<SignInDemo> {
   // If authorizationRequiresUserInteraction() is true, this must be called from
   // a user interaction (button click). In this example app, a button is used
   // regardless, so authorizationRequiresUserInteraction() is not checked.
-  Future<void> _handleAuthorizeScopes(GoogleSignInAccount user) async {
-    try {
-      // #docregion RequestScopes
-      final GoogleSignInClientAuthorization authorization =
-          await user.authorizationClient.authorizeScopes(scopes);
-      // #enddocregion RequestScopes
+  // Future<void> _handleAuthorizeScopes(GoogleSignInAccount user) async {
+  //   try {
+  //     // #docregion RequestScopes
+  //     final GoogleSignInClientAuthorization authorization =
+  //         await user.authorizationClient.authorizeScopes(scopes);
+  //     // #enddocregion RequestScopes
 
-      // The returned tokens are ignored since _handleGetContact uses the
-      // authorizationHeaders method to re-read the token cached by
-      // authorizeScopes. The code above is used as a README excerpt, so shows
-      // the simpler pattern of getting the authorization for immediate use.
-      // That results in an unused variable, which this statement suppresses
-      // (without adding an ignore: directive to the README excerpt).
-      // ignore: unnecessary_statements
-      authorization;
+  //     // The returned tokens are ignored since _handleGetContact uses the
+  //     // authorizationHeaders method to re-read the token cached by
+  //     // authorizeScopes. The code above is used as a README excerpt, so shows
+  //     // the simpler pattern of getting the authorization for immediate use.
+  //     // That results in an unused variable, which this statement suppresses
+  //     // (without adding an ignore: directive to the README excerpt).
+  //     // ignore: unnecessary_statements
+  //     authorization;
 
-      setState(() {
-        _isAuthorized = true;
-        _errorMessage = '';
-      });
-      unawaited(_handleGetContact(_currentUser!));
-    } on GoogleSignInException catch (e) {
-      _errorMessage = _errorMessageFromSignInException(e);
-    }
-  }
+  //     setState(() {
+  //       _isAuthorized = true;
+  //       _errorMessage = '';
+  //     });
+  //     unawaited(_handleGetContact(_currentUser!));
+  //   } on GoogleSignInException catch (e) {
+  //     _errorMessage = _errorMessageFromSignInException(e);
+  //   }
+  // }
 
   // Requests a server auth code for the authorized scopes.
   //
   // If authorizationRequiresUserInteraction() is true, this must be called from
   // a user interaction (button click). In this example app, a button is used
   // regardless, so authorizationRequiresUserInteraction() is not checked.
-  Future<void> _handleGetAuthCode(GoogleSignInAccount user) async {
-    try {
-      // #docregion RequestServerAuth
-      final GoogleSignInServerAuthorization? serverAuth =
-          await user.authorizationClient.authorizeServer(scopes);
-      // #enddocregion RequestServerAuth
+  // Future<void> _handleGetAuthCode(GoogleSignInAccount user) async {
+  //   try {
+  //     // #docregion RequestServerAuth
+  //     final GoogleSignInServerAuthorization? serverAuth =
+  //         await user.authorizationClient.authorizeServer(scopes);
+  //     // #enddocregion RequestServerAuth
 
-      setState(() {
-        _serverAuthCode = serverAuth == null ? '' : serverAuth.serverAuthCode;
-      });
-    } on GoogleSignInException catch (e) {
-      _errorMessage = _errorMessageFromSignInException(e);
-    }
-  }
+  //     setState(() {
+  //       _serverAuthCode = serverAuth == null ? '' : serverAuth.serverAuthCode;
+  //     });
+  //   } on GoogleSignInException catch (e) {
+  //     _errorMessage = _errorMessageFromSignInException(e);
+  //   }
+  // }
 
-  Future<void> _handleSignOut() async {
-    // Disconnect instead of just signing out, to reset the example state as
-    // much as possible.
-    await GoogleSignIn.instance.disconnect();
-  }
+  // Future<void> _handleSignOut() async {
+  //   // Disconnect instead of just signing out, to reset the example state as
+  //   // much as possible.
+  //   await GoogleSignIn.instance.disconnect();
+  // }
 
   Widget _buildBody() {
-    final GoogleSignInAccount? user = _currentUser;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        if (user != null)
-          ..._buildAuthenticatedWidgets(user)
-        else
-          ..._buildUnauthenticatedWidgets(),
+        ..._buildUnauthenticatedWidgets(),
         if (_errorMessage.isNotEmpty) Text(_errorMessage),
       ],
     );
   }
 
   /// Returns the list of widgets to include if the user is authenticated.
-  List<Widget> _buildAuthenticatedWidgets(GoogleSignInAccount user) {
-    return <Widget>[
-      // The user is Authenticated.
-      ListTile(
-        leading: GoogleUserCircleAvatar(identity: user),
-        title: Text(user.displayName ?? ''),
-        subtitle: Text(user.email),
-      ),
-      const Text('Signed in successfully.'),
-      if (_isAuthorized) ...<Widget>[
-        // The user has Authorized all required scopes.
-        if (_contactText.isNotEmpty) Text(_contactText),
-        ElevatedButton(
-          child: const Text('REFRESH'),
-          onPressed: () => _handleGetContact(user),
-        ),
-        if (_serverAuthCode.isEmpty)
-          ElevatedButton(
-            child: const Text('REQUEST SERVER CODE'),
-            onPressed: () => _handleGetAuthCode(user),
-          )
-        else
-          Text('Server auth code:\n$_serverAuthCode'),
-      ] else ...<Widget>[
-        // The user has NOT Authorized all required scopes.
-        const Text('Authorization needed to read your contacts.'),
-        ElevatedButton(
-          onPressed: () => _handleAuthorizeScopes(user),
-          child: const Text('REQUEST PERMISSIONS'),
-        ),
-      ],
-      ElevatedButton(onPressed: _handleSignOut, child: const Text('SIGN OUT')),
-    ];
-  }
+  // List<Widget> _buildAuthenticatedWidgets(GoogleSignInAccount user) {
+  //   return <Widget>[
+  //     // The user is Authenticated.
+  //     ListTile(
+  //       leading: GoogleUserCircleAvatar(identity: user),
+  //       title: Text(user.displayName ?? ''),
+  //       subtitle: Text(user.email),
+  //     ),
+  //     Home(user: user),
+  //     const Text('Signed in successfully.'),
+  //     if (_isAuthorized) ...<Widget>[
+  //       // The user has Authorized all required scopes.
+  //       if (_contactText.isNotEmpty) Text(_contactText),
+  //       ElevatedButton(
+  //         child: const Text('REFRESH'),
+  //         onPressed: () => _handleGetContact(user),
+  //       ),
+  //       if (_serverAuthCode.isEmpty)
+  //         ElevatedButton(
+  //           child: const Text('REQUEST SERVER CODE'),
+  //           onPressed: () => _handleGetAuthCode(user),
+  //         )
+  //       else
+  //         Text('Server auth code:\n$_serverAuthCode'),
+  //     ] else ...<Widget>[
+  //       // The user has NOT Authorized all required scopes.
+  //       const Text('Authorization needed to read your contacts.'),
+  //       ElevatedButton(
+  //         onPressed: () => _handleAuthorizeScopes(user),
+  //         child: const Text('REQUEST PERMISSIONS'),
+  //       ),
+  //     ],
+  //     ElevatedButton(onPressed: _handleSignOut, child: const Text('SIGN OUT')),
+  //   ];
+  // }
 
   /// Returns the list of widgets to include if the user is not authenticated.
   List<Widget> _buildUnauthenticatedWidgets() {
@@ -320,13 +318,17 @@ class _SignInDemoState extends State<SignInDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Google Sign In')),
-      body: ConstrainedBox(
-        constraints: const BoxConstraints.expand(),
-        child: _buildBody(),
-      ),
-    );
+    final GoogleSignInAccount? user = _currentUser;
+    if (user == null)
+      return Scaffold(
+        appBar: AppBar(title: const Text('Google Sign In')),
+        body: ConstrainedBox(
+          constraints: const BoxConstraints.expand(),
+          child: _buildBody(),
+        ),
+      );
+    else
+      return Home(user: user);
   }
 
   String _errorMessageFromSignInException(GoogleSignInException e) {
